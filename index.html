@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PermaNote – Save Text Forever</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #222;
+    }
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      height: 200px;
+      padding: 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+      margin-bottom: 1rem;
+    }
+    label {
+      margin-bottom: 0.5rem;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    #link {
+      margin-top: 1rem;
+      color: #0077cc;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>📝 PermaNote</h1>
+  <textarea id="note" placeholder="Type your note here..."></textarea>
+
+  <div class="controls">
+    <label>
+      <input type="checkbox" id="encrypt" />
+      Encrypt note before upload
+    </label>
+    <button onclick="saveNote()">💾 Save Forever</button>
+  </div>
+
+  <div id="link"></div>
+
+  <script>
+    function saveNote() {
+      const note = document.getElementById("note").value;
+      const encrypt = document.getElementById("encrypt").checked;
+      const link = document.getElementById("link");
+
+      if (!note.trim()) {
+        alert("Please enter a note!");
+        return;
+      }
+
+      link.innerHTML = "🔄 Uploading note to Arweave... (not yet functional)";
+    }
+  </script>
+</body>
+</html>
