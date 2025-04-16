@@ -1,10 +1,10 @@
-# 📝 PermaNote – Permanent Notes on Arweave
+PermaNote – Permanent Notes on Arweave
 
 PermaNote is a minimal web-based app that lets users write text and save it forever on the Arweave blockchain. No accounts. No servers. Just your thoughts, permanently stored.
 
 ---
 
-## 🌟 Features
+Features
 - Simple note editor
 - Click "Save Forever" to upload to Arweave
 - Get a permanent, uncensorable link
@@ -12,14 +12,14 @@ PermaNote is a minimal web-based app that lets users write text and save it fore
 
 ---
 
-## 🧱 Tech Stack (Planned)
+Tech Stack (Planned)
 - HTML, CSS, JavaScript (Vanilla or React)
 - Arweave.js or Bundlr SDK for uploads
 - Optional: ArConnect for wallet connection
 
 ---
 
-## 🎯 Status
+Status
 - ✅ Project Planning
 - 🟨 MVP Design
 - ⬜️ Development
@@ -29,8 +29,8 @@ PermaNote is a minimal web-based app that lets users write text and save it fore
 
 ---
 
-## 💰 Grant Plan
-We aim to request **$5,000 USD** from the Arweave microgrant fund to:
+💰 Grant Plan
+We aim to request **$6,000 USD** from the Arweave microgrant fund to:
 - Build MVP
 - Cover dev time and design
 - Pay for Arweave upload fees
@@ -38,7 +38,7 @@ We aim to request **$5,000 USD** from the Arweave microgrant fund to:
 
 ---
 
-## 🤝 Contact
+Contact
 Built by Bledar Tola
 
 DMs open for collabs, feedback, or forks.
