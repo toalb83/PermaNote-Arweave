@@ -4,6 +4,14 @@ PermaNote is a minimal web-based app that lets users write text and save it fore
 
 ---
 
+UI Mockup
+
+![PermaNote UI](mockup.png)
+
+*A clean, single-screen layout with a text box, "Save Forever" button, and link preview.*
+
+---
+
 Features
 - Simple note editor
 - Click "Save Forever" to upload to Arweave
