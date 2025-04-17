@@ -1,126 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <style>
-  body {
-    margin: 0;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  h1 {
-    color: #222;
-  }
-  textarea {
-    width: 100%;
-    max-width: 600px;
-    height: 200px;
-    padding: 1rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    resize: vertical;
-    margin-bottom: 1rem;
-  }
-  label {
-    margin-bottom: 0.5rem;
-  }
-  .controls {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  button {
-    padding: 0.7rem 1.2rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-  }
-  #link {
-    margin-top: 1rem;
-    color: #0077cc;
-    font-size: 0.95rem;
-  }
-</style>
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PermaNote – Save Text Forever</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PermaNote</title>
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@bundlr-network/client/build/web/bundlr.min.js"></script>
-</head>
-<body>
-  <h1>📝 PermaNote</h1>
-  <textarea id="note" placeholder="Write your permanent note here..."></textarea><br/>
-  <button onclick="connectBundlr()">🔌 Connect Wallet</button>
-  <button onclick="saveNote()">💾 Save Forever</button>
-  <div id="link"></div>
-
-  <script>
-    let bundlr;
-
-    async function connectBundlr() {
-      if (!window.ethereum) return alert("Install MetaMask first!");
-
-      const provider = new window.Web3(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-
-      bundlr = new Bundlr.WebBundlr("https://node1.bundlr.network", "matic", provider);
-      await bundlr.ready();
-      alert("Bundlr connected!");
-    }
-
-    async function saveNote() {
-      if (!bundlr) {
-        alert("Please connect wallet first!");
-        return;
-      }
-
-      const note = document.getElementById("note").value;
-      const link = document.getElementById("link");
-      if (!note.trim()) {
-        alert("Please enter a note!");
-        return;
-      }
-
-      link.innerHTML = "Uploading to Arweave...";
-
-      try {
-        const tx = await bundlr.upload(note, {
-          tags: [{ name: "Content-Type", value: "text/plain" }],
-        });
-
-        link.innerHTML = `✅ Saved! <a href="https://arweave.net/${tx.id}" target="_blank">View on Arweave</a>`;
-      } catch (err) {
-        console.error(err);
-        link.innerHTML = "❌ Upload failed.";
-      }
-    }
-  </script>
-</body>
-</html>
-
+  <style>
+    body {
       margin: 0;
       padding: 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
+      font-family: sans-serif;
     }
     h1 {
       color: #222;
@@ -135,9 +26,6 @@
       border-radius: 8px;
       resize: vertical;
       margin-bottom: 1rem;
-    }
-    label {
-      margin-bottom: 0.5rem;
     }
     .controls {
       display: flex;
@@ -160,34 +48,55 @@
       font-size: 0.95rem;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@bundlr-network/client/build/bundlr.web.min.js"></script>
 </head>
 <body>
   <h1>📝 PermaNote</h1>
-  <textarea id="note" placeholder="Type your note here..."></textarea>
-
+  <textarea id="note" placeholder="Write your permanent note here..."></textarea>
   <div class="controls">
-    <label>
-      <input type="checkbox" id="encrypt" />
-      Encrypt note before upload
-    </label>
-    <button onclick="saveNote()">💾 Save Forever</button>
+    <button id="connect">🔌 Connect Wallet</button>
+    <button id="save">💾 Save Forever</button>
   </div>
-
   <div id="link"></div>
 
   <script>
-    function saveNote() {
-      const note = document.getElementById("note").value;
-      const encrypt = document.getElementById("encrypt").checked;
-      const link = document.getElementById("link");
+    let bundlr;
 
-      if (!note.trim()) {
-        alert("Please enter a note!");
-        return;
+    async function connectWallet() {
+      if (window.ethereum) {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        const provider = new Web3(window.ethereum);
+        bundlr = new Bundlr.default("https://node1.bundlr.network", "ethereum", provider);
+        await bundlr.ready();
+        alert("Wallet connected!");
+      } else {
+        alert("MetaMask not detected!");
       }
-
-      link.innerHTML = "🔄 Uploading note to Arweave... (not yet functional)";
     }
+
+    async function uploadNote() {
+      const text = document.getElementById("note").value.trim();
+      if (!text) return alert("Please write something first.");
+
+      try {
+        const data = new TextEncoder().encode(text);
+        const tx = bundlr.createTransaction(data, {
+          tags: [{ name: "Content-Type", value: "text/plain" }]
+        });
+        await tx.sign();
+        const res = await tx.upload();
+
+        const url = `https://arweave.net/${tx.id}`;
+        document.getElementById("link").innerHTML = `✅ <a href="${url}" target="_blank">View your note on Arweave</a>`;
+      } catch (e) {
+        console.error(e);
+        alert("Upload failed!");
+      }
+    }
+
+    document.getElementById("connect").onclick = connectWallet;
+    document.getElementById("save").onclick = uploadNote;
   </script>
 </body>
 </html>
