@@ -3,65 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PermaNote</title>
+  <title>PermaNote — Save Notes Forever</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@bundlr-network/client/build/bundlr.min.js"></script>
   <style>
     body {
-      margin: 0;
-      padding: 2rem;
+      font-family: sans-serif;
+      background: #f7f7f7;
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-family: sans-serif;
-    }
-    h1 {
-      color: #222;
+      padding: 2em;
     }
     textarea {
-      width: 100%;
+      width: 90%;
       max-width: 600px;
-      height: 200px;
-      padding: 1rem;
-      font-size: 1rem;
+      height: 150px;
+      padding: 1em;
+      font-size: 1em;
       border: 1px solid #ccc;
       border-radius: 8px;
       resize: vertical;
-      margin-bottom: 1rem;
-    }
-    .controls {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      margin-bottom: 1rem;
     }
     button {
-      padding: 0.7rem 1.2rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
+      margin-top: 1em;
+      padding: 0.7em 1.5em;
+      font-size: 1em;
+      background-color: #4a90e2;
       color: white;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
-    #link {
-      margin-top: 1rem;
-      color: #0077cc;
-      font-size: 0.95rem;
+    button:hover {
+      background-color: #357bd8;
+    }
+    .status {
+      margin: 1em 0;
+      font-weight: bold;
+    }
+    .note-link {
+      margin-top: 1em;
+      word-break: break-all;
+      color: green;
+    }
+    label {
+      margin-top: 1em;
+      display: flex;
+      align-items: center;
+      font-size: 0.9em;
+    }
+    input[type="checkbox"] {
+      margin-right: 0.5em;
     }
   </style>
-  <!-- Required scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@bundlr-network/client/build/bundlr.web.min.js"></script>
 </head>
 <body>
-  <h1>📝 PermaNote</h1>
-  <textarea id="note" placeholder="Write your permanent note here..."></textarea>
-  <div class="controls">
-    <button id="connect">🔌 Connect Wallet</button>
-    <button id="save">💾 Save Forever</button>
-  </div>
-  <div id="link"></div>
 
-  <!-- Connect JS -->
-  <script src="app.js"></script>
+  <h1>📝 PermaNote</h1>
+  <p class="status" id="walletStatus">🔌 Wallet not connected</p>
+  <button onclick="connectWallet()">Connect Wallet</button>
+
+  <textarea id="note" placeholder="Type your note here..."></textarea>
+
+  <label>
+    <input type="checkbox" id="encrypt" />
+    Encrypt note (coming soon)
+  </label>
+
+  <button onclick="uploadNote()">Save Forever</button>
+
+  <p class="note-link" id="noteLink"></p>
+
+  <script>
+    let bundlr;
+    let provider;
+    let signer;
+    let walletConnected = false;
+
+    async function connectWallet() {
+      if (typeof window.ethereum === 'undefined') {
+        alert("MetaMask not detected!");
+        return;
+      }
+
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        if (!accounts || accounts.length === 0) {
+          alert("Wallet not connected.");
+          return;
+        }
+
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        walletConnected = true;
+
+        bundlr = new Bundlr("https://node1.bundlr.network", "matic", signer);
+        await bundlr.ready();
+
+        document.getElementById("walletStatus").textContent = "✅ Wallet connected!";
+      } catch (err) {
+        console.error("Wallet connection error:", err);
+        alert("Failed to connect wallet. Try refreshing or disconnecting in MetaMask.");
+      }
+    }
+
+    async function uploadNote() {
+      const note = document.getElementById("note").value;
+      const encrypt = document.getElementById("encrypt").checked;
+
+      if (!walletConnected || !bundlr) {
+        alert("Connect your wallet first.");
+        return;
+      }
+
+      if (!note.trim()) {
+        alert("Note is empty.");
+        return;
+      }
+
+      if (encrypt) {
+        alert("Encryption is not supported yet.");
+        return;
+      }
+
+      try {
+        const tx = await bundlr.upload(note, { tags: [{ name: "Content-Type", value: "text/plain" }] });
+        const url = `https://arweave.net/${tx.id}`;
+        document.getElementById("noteLink").innerHTML = `✅ Note uploaded: <a href="${url}" target="_blank">${url}</a>`;
+      } catch (err) {
+        console.error("Upload failed:", err);
+        alert("Upload failed. Check console.");
+      }
+    }
+  </script>
 </body>
 </html>
